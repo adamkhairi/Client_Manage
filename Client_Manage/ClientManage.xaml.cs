@@ -14,6 +14,8 @@ namespace Client_Manage
     public partial class MainWindow : MetroWindow
     {
         //Initialise Variables 
+        private AdoNet adoNet = new AdoNet();
+
         private string connString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=ClientManage;Integrated Security=True";
         private SqlDataAdapter dataAdapter;
         private DataSet dataSet;
@@ -22,14 +24,17 @@ namespace Client_Manage
         public MainWindow()
         {
             InitializeComponent();
+
+        }
+        ///////-->
+        private void ClientManage_Load(object sender, EventArgs e)
+        {
             //Fill DropDowns With City
             GetCities();
 
             //Get All Client
             showAll();
         }
-        ///////-->
-
 
         //Get All Clients
         private void showAll()
@@ -71,23 +76,22 @@ namespace Client_Manage
         //Fill DropDowns With Cities
         private void GetCities()
         {
-            using (cnx = new SqlConnection(connString))
+            using (adoNet.Command.Connection = adoNet.Connection)
             {
                 try
                 {
-                    cnx.Open();
-                    string Query = "Select * From Cities ";
-                    SqlCommand sql = new SqlCommand(Query, cnx);
-                    SqlDataReader reader = sql.ExecuteReader();
-                    while (reader.Read())
+                    adoNet.Command.CommandText = "Select * From Cities;";
+                    adoNet.Connection.Open();
+                    adoNet.Reader = adoNet.Command.ExecuteReader();
+                    while (adoNet.Reader.Read())
                     {
-                        string city = reader.GetString(1);
+                        string city = adoNet.Reader.GetString(1);
                         //Fill dropdown of Controls
                         City.Items.Add(city);
                         //Fill dropdown of Filter
-                        CityFilter.Items.Add(city);
+                        CityFilter.Items.Add(adoNet.Reader[1]);
                     }
-                    cnx.Close();
+                    adoNet.Connection.Close();
                 }
                 catch (Exception e)
                 {
