@@ -28,6 +28,7 @@ namespace Client_Manage
             //Get All Client
             showAll();
         }
+        ///////-->
 
 
         //Get All Clients
@@ -37,16 +38,19 @@ namespace Client_Manage
             {
                 try
                 {
-                    cnx.Open();
+                    //// Connected Mode ////
+                    cnx.Open(); //Open Cnx
                     string Query = @"SELECT u.clientId AS 'ID', u.FName AS 'First Name', u.LName AS 'Last Name', u.cAddress AS 'Address', c.cityName AS 'City' FROM Client u 
                     INNER Join Cities c ON u.CityId = c.cityId; ";
-                    cnx.Close();
-                    SqlCommand cmd = new SqlCommand(Query, cnx);
-                    dataAdapter = new SqlDataAdapter(cmd);
+
+                    SqlCommand cmd = new SqlCommand(Query, cnx);//Send Query To Db
+                    dataAdapter = new SqlDataAdapter(cmd);//Retrieve Result 
                     DataTable table = new DataTable("Client");
-                    dataAdapter.Fill(table);
-                    DataList.ItemsSource = table.DefaultView;
-                    DataTableReader reader = new DataTableReader(table);
+                    dataAdapter.Fill(table);//Fill dataAdapter with the Result Table
+                    cnx.Close(); //Close Cnx
+                    DataList.ItemsSource = table.DefaultView;//Append the Result Table to the DataList in XAML
+                    DataTableReader reader = new DataTableReader(table);// Read Table
+
                     while (reader.Read())
                     {
                         // DataList.Columns.Insert(0,(DataGridColumn)reader.GetString(0));
@@ -62,6 +66,7 @@ namespace Client_Manage
             }
         }
         ///////-->
+
 
         //Fill DropDowns With Cities
         private void GetCities()
