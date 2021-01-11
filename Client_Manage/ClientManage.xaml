@@ -95,9 +95,12 @@
 
                     <!--DataGrid / Tables Clients-->
                     <Grid>
-                        <DataGrid Tag="List" Name="DataList" Margin="5" HorizontalContentAlignment="Center">
+                        <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center">
                         </DataGrid>
                     </Grid>
+                    <DataGrid Height="100"/>
+
+
                     <!--///////-->
 
                 </StackPanel>

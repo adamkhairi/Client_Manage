@@ -12,9 +12,11 @@ namespace Client_Manage
         private SqlCommand command;
         private SqlDataReader reader;
         private SqlDataAdapter adapter;
-        private string connectionString;
-        private DataTable dataTable;
+        private readonly string connectionString;
+
         private DataSet dataSet;
+        private DataTable citiesDataTable;
+        private DataTable clientsDataTable;
 
         public SqlConnection Connection
         {
@@ -45,10 +47,16 @@ namespace Client_Manage
             get => connectionString;
         }
 
-        public DataTable DataTable
+        public DataTable CitiesDataTable
         {
-            get => dataTable;
-            set => dataTable = value;
+            get => citiesDataTable;
+            set => citiesDataTable = value;
+        }
+
+        public DataTable ClientsDataTable
+        {
+            get => clientsDataTable;
+            set => clientsDataTable = value;
         }
 
         public DataSet DataSet
@@ -63,6 +71,7 @@ namespace Client_Manage
             connection = new SqlConnection(connectionString);
             command = new SqlCommand();
             adapter = new SqlDataAdapter();
+            dataSet = new DataSet();
         }
     }
 }

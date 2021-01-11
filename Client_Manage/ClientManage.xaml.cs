@@ -15,11 +15,10 @@ namespace Client_Manage
     {
         //Initialise Variables 
         private AdoNet adoNet = new AdoNet();
-
-        private string connString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=ClientManage;Integrated Security=True";
-        private SqlDataAdapter dataAdapter;
-        private DataSet dataSet;
-        private SqlConnection cnx;
+        //private string connString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=ClientManage;Integrated Security=True";
+        //private SqlDataAdapter dataAdapter;
+        //private DataSet dataSet;
+        //private SqlConnection cnx;
 
         public MainWindow()
         {
@@ -30,76 +29,87 @@ namespace Client_Manage
         private void ClientManage_Load(object sender, EventArgs e)
         {
             //Fill DropDowns With City
-            GetCities();
-
+            GetCity();
             //Get All Client
-            showAll();
         }
 
         //Get All Clients
         private void showAll()
         {
-            using (cnx = new SqlConnection(connString))
-            {
-                try
-                {
-                    //// Connected Mode ////
-                    cnx.Open(); //Open Cnx
-                    string Query = @"SELECT u.clientId AS 'ID', u.FName AS 'First Name', u.LName AS 'Last Name', u.cAddress AS 'Address', c.cityName AS 'City' FROM Client u 
-                    INNER Join Cities c ON u.CityId = c.cityId; ";
+            //using (cnx = new SqlConnection(connString))
+            //{
+            //    try
+            //    {
+            //        //// Connected Mode ////
+            //        //cnx.Open(); //Open Cnx
+            //        //string Query = @"SELECT u.clientId AS 'ID', u.FName AS 'First Name', u.LName AS 'Last Name', u.cAddress AS 'Address', c.cityName AS 'City' FROM Client u 
+            //        //INNER Join Cities c ON u.CityId = c.cityId; ";
 
-                    SqlCommand cmd = new SqlCommand(Query, cnx);//Send Query To Db
-                    dataAdapter = new SqlDataAdapter(cmd);//Retrieve Result 
-                    DataTable table = new DataTable("Client");
-                    dataAdapter.Fill(table);//Fill dataAdapter with the Result Table
-                    cnx.Close(); //Close Cnx
-                    DataList.ItemsSource = table.DefaultView;//Append the Result Table to the DataList in XAML
-                    DataTableReader reader = new DataTableReader(table);// Read Table
+            //        //SqlCommand cmd = new SqlCommand(Query, cnx);//Send Query To Db
+            //        //dataAdapter = new SqlDataAdapter(cmd);//Retrieve Result 
+            //        //DataTable table = new DataTable("Client");
+            //        //dataAdapter.Fill(table);//Fill dataAdapter with the Result Table
+            //        //cnx.Close(); //Close Cnx
+            //        //DataList.ItemsSource = table.DefaultView;//Append the Result Table to the DataList in XAML
+            //        //DataTableReader reader = new DataTableReader(table);// Read Table
 
-                    while (reader.Read())
-                    {
-                        // DataList.Columns.Insert(0,(DataGridColumn)reader.GetString(0));
-                        //DataList.Items.Add(reader.GetProviderSpecificValue(0));
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    MessageBox.Show(e.Message);
-                }
+            //        //while (reader.Read())
+            //        //{
+            //        //    // DataList.Columns.Insert(0,(DataGridColumn)reader.GetString(0));
+            //        //    //DataList.Items.Add(reader.GetProviderSpecificValue(0));
+            //        //}
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine(e);
+            //        MessageBox.Show(e.Message);
+            //    }
 
-            }
+            //}
         }
         ///////-->
 
-
-        //Fill DropDowns With Cities
-        private void GetCities()
+        void GetCity()
         {
-            using (adoNet.Command.Connection = adoNet.Connection)
+            //adoNet = new AdoNet();
+
+            try
             {
-                try
+                string req = @"Select * From Cities; SELECT u.clientId AS 'ID', u.FName AS 'First Name', u.LName AS 'Last Name', u.cAddress AS 'Address', c.cityName AS 'City' FROM Client u INNER Join Cities c ON u.CityId = c.cityId; ";
+                //Set the Request
+                adoNet.Command.CommandText = req;
+                //Connection with Db
+                adoNet.Command.Connection = adoNet.Connection;
+                //Send Command and Get Result in Adapter
+                adoNet.Adapter.SelectCommand = adoNet.Command;
+                //Fill the DataSet with Result wish in Adapter
+                adoNet.Adapter.Fill(adoNet.DataSet);
+
+                //Separate the 2 Tables 
+                //Cities and Clients from DataSet To DataTable Cities/Clients
+                adoNet.CitiesDataTable = adoNet.DataSet.Tables[0];
+                adoNet.ClientsDataTable = adoNet.DataSet.Tables[1];
+                //Set Name to the tow tables
+                adoNet.CitiesDataTable.TableName = "Cities";
+                adoNet.ClientsDataTable.TableName = "Clients";
+                MessageBox.Show(adoNet.DataSet.Tables[0].ToString());
+                MessageBox.Show(adoNet.DataSet.Tables[1].ToString());
+
+                this.DataList.ItemsSource = adoNet.DataSet.Tables[1].DefaultView;
+                //Fill DropDowns With Cities
+                foreach (var item in adoNet.CitiesDataTable.Select())
                 {
-                    adoNet.Command.CommandText = "Select * From Cities;";
-                    adoNet.Connection.Open();
-                    adoNet.Reader = adoNet.Command.ExecuteReader();
-                    while (adoNet.Reader.Read())
-                    {
-                        string city = adoNet.Reader.GetString(1);
-                        //Fill dropdown of Controls
-                        City.Items.Add(city);
-                        //Fill dropdown of Filter
-                        CityFilter.Items.Add(adoNet.Reader[1]);
-                    }
-                    adoNet.Connection.Close();
+                    City.Items.Add(item[1]);
+                    CityFilter.Items.Add(item[1]);
                 }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message);
-                }
+                ///////-->
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
             }
         }
-        ///////-->
+
 
 
         private void CityFilter_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
