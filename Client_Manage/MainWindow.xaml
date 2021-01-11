@@ -1,0 +1,108 @@
+﻿<mah:MetroWindow x:Class="Client_Manage.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 GlowBrush="{DynamicResource MahApps.Brushes.G}"
+                 WindowStartupLocation="CenterScreen"
+                 mc:Ignorable="d"
+                 Title="MainWindow" Height="450" Width="800"
+>
+    <mah:MetroWindow.LeftWindowCommands>
+        <mah:WindowCommands>
+            <Button Click="LaunchGitHubSite" ToolTip="Open up the GitHub site">
+                <iconPacks:PackIconModern Width="20"
+                                          Height="20"
+                                          Margin="2"
+                                          Kind="SocialGithubOctocat" />
+            </Button>
+        </mah:WindowCommands>
+    </mah:MetroWindow.LeftWindowCommands>
+
+    <Border Padding="10" Margin="5">
+        <StackPanel >
+            <!--Big Title-->
+            <StackPanel>
+                <TextBlock Text="Client Management" TextAlignment="Center" FontSize="26" FontWeight="SemiBold"  Margin="0 10 0 35"/>
+            </StackPanel>
+            <!--/////////-->
+
+            <Grid  VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <!--Form Inputs and Buttons-->
+                <StackPanel Margin="2" VerticalAlignment="Center">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!--Grid For Labels-->
+                        <StackPanel Grid.Column="0">
+                            <Label Margin="2" Content="First name :"/>
+                            <Label Margin="2" Content="Last name :"/>
+                            <Label Margin="2" Content="Address :"/>
+                            <Label Margin="2" Content="City :" />
+                        </StackPanel>
+                        <!--///////-->
+
+                        <!--Grid For Inputs-->
+                        <StackPanel Grid.Column="1">
+                            <TextBox Name="FName" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
+                            <TextBox Name="LName" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
+                            <TextBox Name="Address" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
+                            <ComboBox Name="City" Width="220" Margin="2" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SelectedIndex="0">
+                                <ComboBoxItem IsEnabled="False" >Select</ComboBoxItem>
+                            </ComboBox>
+                        </StackPanel>
+                        <!--///////-->
+
+                    </Grid>
+
+                    <!--Buttons Control-->
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 10">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Name="btnUpdate" Width="100" Content="Update" Margin="5 5 15 5"/>
+                            <Button Name="btnDelete" Width="100" Content="Delete" Margin="15 5 5 5"/>
+                        </StackPanel>
+                        <Button Name="btnAdd" Content="Add"  Margin=" 5"/>
+                        <Button Name="btnSave" Content="Save" Width="80" Margin=" 5"/>
+
+                    </StackPanel>
+                    <!--///////-->
+
+
+                </StackPanel>
+                <!--/////////-->
+
+                <!--DataGrid-->
+                <StackPanel Grid.Column="1" Background="WhiteSmoke" Margin="2">
+                    <!--Filter ComboBox-->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+                        <Label Content="Filter :" />
+                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0" SelectionChanged="CityFilter_OnSelectionChanged">
+                            <ComboBoxItem IsEnabled="False" Content="All"></ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                    <!--///////-->
+
+                    <!--DataGrid / Tables Clients-->
+                    <Grid>
+                        <DataGrid Tag="List" Name="DataList" Margin="5" HorizontalContentAlignment="Center">
+                        </DataGrid>
+                    </Grid>
+                    <!--///////-->
+
+                </StackPanel>
+                <!--///////-->
+
+            </Grid>
+        </StackPanel>
+    </Border>
+</mah:MetroWindow>
