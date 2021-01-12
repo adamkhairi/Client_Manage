@@ -28,6 +28,7 @@ namespace Client_Manage
         }
 
         ///////-->
+        #region sdfsdf
         private void ClientManage_Load(object sender, EventArgs e)
         {
             //Fill DropDowns With City
@@ -35,6 +36,7 @@ namespace Client_Manage
             //Get All Client
         }
 
+        #endregion
 
         private void GetStarted()
         {
@@ -131,7 +133,7 @@ namespace Client_Manage
             // Change 
         }
 
-        //Top left GitHub ICON Event
+        ////Top left GitHub ICON Event
         private void LaunchGitHubSite(object sender, RoutedEventArgs e)
         {
             const string url = @"https://github.com/adamkhairi/";
