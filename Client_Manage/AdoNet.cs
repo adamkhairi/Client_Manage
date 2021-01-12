@@ -18,6 +18,22 @@ namespace Client_Manage
         private DataTable citiesDataTable;
         private DataTable clientsDataTable;
 
+        private SqlCommandBuilder builder;
+        private bool ifUpdate = false;
+
+        public SqlCommandBuilder Builder
+        {
+            get => builder;
+            set => builder = value;
+        }
+
+
+        public bool IfUpdate
+        {
+            get => ifUpdate;
+            set => ifUpdate = value;
+        }
+
         public SqlConnection Connection
         {
             get => connection;
@@ -67,11 +83,12 @@ namespace Client_Manage
 
         public AdoNet()
         {
-            connectionString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=ClientManage;Integrated Security=True";
+            connectionString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=Client;Integrated Security=True";
             connection = new SqlConnection(connectionString);
             command = new SqlCommand();
             adapter = new SqlDataAdapter();
             dataSet = new DataSet();
+
         }
     }
 }
