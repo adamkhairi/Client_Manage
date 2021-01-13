@@ -37,6 +37,42 @@ namespace Client_Manage
         #endregion
 
 
+        #region Get Cities From Db and add them to ComboBox ==>
+
+        void GetCitys()
+        {
+            try
+            {
+                City.Items.Clear();
+                CityFilter.Items.Clear();
+                Ad.Adapter1 = new SqlDataAdapter("Select * From Citys", Ad.Cnx);
+
+                ////Fill the DataSet with Result wish in Adapter
+                Ad.Adapter1.Fill(Ad.DataSet, "Citys");
+
+                //Fill the UI DropDown with Cities DataTable
+                City.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
+                City.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
+                City.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
+
+                CityFilter.ItemsSource = City.ItemsSource;
+
+                ////Fill the UI DropDown with Cities Filtre DataTable
+                //CityFilter.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
+                CityFilter.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
+                CityFilter.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex + string.Empty);
+            }
+        }
+
+        #endregion
+
+
         #region Get Clients and fill DataList ==>
 
         void GetClients()
@@ -57,44 +93,18 @@ namespace Client_Manage
                 //Copy Clients Table in a DataTable
                 //Ad.Datatable = Ad.DataSet.Tables["Clients"];
                 DataList.ItemsSource = Ad.DataSet.Tables["Clients"].DefaultView;
+                Ad.Datatable = Ad.DataSet.Tables["Clients"];
+
+                /////////////////
+                Ad.Builder = new SqlCommandBuilder(Ad.Adapter);
+                Ad.Adapter.DeleteCommand = Ad.Builder.GetDeleteCommand();
+                Ad.Adapter.InsertCommand = Ad.Builder.GetInsertCommand();
+                Ad.Adapter.UpdateCommand = Ad.Builder.GetUpdateCommand();
+
             }
             catch (Exception e)
             {
                 MessageBox.Show(e + string.Empty);
-            }
-        }
-
-        #endregion
-
-
-        #region Get Cities From Db and add them to ComboBox ==>
-
-        void GetCitys()
-        {
-            try
-            {
-                City.Items.Clear();
-                CityFilter.Items.Clear();
-                Ad.Adapter = new SqlDataAdapter("Select * From Citys", Ad.Cnx);
-
-                ////Fill the DataSet with Result wish in Adapter
-                Ad.Adapter.Fill(Ad.DataSet, "Citys");
-
-                //Fill the UI DropDown with Cities DataTable
-                City.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
-                City.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
-                City.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
-
-                //Fill the UI DropDown with Cities Filtre DataTable
-                CityFilter.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
-                CityFilter.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
-                CityFilter.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex + string.Empty);
             }
         }
 
@@ -333,7 +343,7 @@ namespace Client_Manage
         {
             try
             {
-                Ad.Builder = new SqlCommandBuilder(Ad.Adapter);
+
                 MessageBox.Show(Ad.Builder.GetUpdateCommand() + string.Empty);
                 Ad.Adapter.Update(Ad.DataSet, "Clients");
                 MessageBox.Show("Save Done");
@@ -353,11 +363,15 @@ namespace Client_Manage
         private void CityFilter_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-            //DataTable dataTable = Ad.DataSet.Tables["Clients"];
-            //var view = Ad.DataSet.Tables["Clients"].DefaultView;
-            //view.RowFilter = $"City Id = '{CityFilter.SelectedValue}'";
-            //DataList.ItemsSource = (System.Collections.IEnumerable)view.ToTable();
-            //view.RowFilter = string.Empty;
+
+            DataView view = Ad.Datatable.DefaultView;
+            view.RowFilter = $"[City Id] = '{CityFilter.SelectedValue}'";
+            DataList.ItemsSource = view.ToTable().DefaultView;
+            view.RowFilter = string.Empty;
+            if (CityFilter.SelectedValue.ToString().Trim() == "1")
+            {
+                DataList.ItemsSource = Ad.DataSet.Tables["Clients"].DefaultView;
+            }
 
         }
 

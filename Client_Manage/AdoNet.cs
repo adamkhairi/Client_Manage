@@ -15,6 +15,8 @@ namespace Client_Manage
         private SqlDataReader dataReader;
         private DataTable datatable = new DataTable();
         private SqlDataAdapter adapter = new SqlDataAdapter();
+        private SqlDataAdapter adapter1 = new SqlDataAdapter();
+
         private DataSet dataSet = new DataSet();
         private DataRow row;
         private bool ifUpdate = false;
@@ -30,6 +32,8 @@ namespace Client_Manage
         public DataTable Datatable { get => datatable; set => datatable = value; }
         public SqlDataAdapter Adapter { get => adapter; set => adapter = value; }
         public DataSet DataSet { get => dataSet; set => dataSet = value; }
+        public SqlDataAdapter Adapter1 { get => adapter1; set => adapter1 = value; }
+
 
         // declaration of connect 
         public void connect()

@@ -88,8 +88,7 @@
                     <!--Filter ComboBox-->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                         <Label Content="Filter :" />
-                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0" SelectionChanged="CityFilter_OnSelectionChanged">
-                            <ComboBoxItem IsEnabled="False" Content="All"></ComboBoxItem>
+                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="-1" SelectionChanged="CityFilter_OnSelectionChanged">
                         </ComboBox>
                     </StackPanel>
                     <!--///////-->
@@ -99,7 +98,6 @@
                         <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center" SelectionMode="Single" SelectedItem="-1" SelectionChanged="DataList_SelectionChanged" MinColumnWidth="100" AutoGenerateColumns="True" CanUserResizeColumns="False" ColumnWidth="110" CanUserAddRows="False" Focusable="False" AllowDrop="False"  >
 
                         </DataGrid>
-
                     </Grid>
 
 
