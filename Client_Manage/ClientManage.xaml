@@ -8,7 +8,7 @@
                  GlowBrush="{DynamicResource MahApps.Brushes.G}"
                  WindowStartupLocation="CenterScreen"
                  mc:Ignorable="d"
-                 Title="Client Management" Height="450" Width="800"
+                 Title="Client Management" Height="450" Width="974"
                  Loaded="ClientManage_Load"
 >
     <mah:MetroWindow.LeftWindowCommands>
@@ -88,7 +88,7 @@
                     <!--Filter ComboBox-->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                         <Label Content="Filter :" />
-                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0">
+                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0" SelectionChanged="CityFilter_OnSelectionChanged">
                             <ComboBoxItem IsEnabled="False" Content="All"></ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
@@ -96,9 +96,10 @@
 
                     <!--DataGrid / Tables Clients-->
                     <Grid>
-                        <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center" SelectionMode="Single" SelectedItem="-1" SelectionChanged="DataList_SelectionChanged">
+                        <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center" SelectionMode="Single" SelectedItem="-1" SelectionChanged="DataList_SelectionChanged" MinColumnWidth="100" AutoGenerateColumns="True" CanUserResizeColumns="False" ColumnWidth="110" CanUserAddRows="False" Focusable="False" AllowDrop="False"  >
 
                         </DataGrid>
+
                     </Grid>
 
 

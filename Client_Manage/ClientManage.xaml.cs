@@ -348,6 +348,21 @@ namespace Client_Manage
         #endregion
 
 
+        #region Filter Event On Change
+
+        private void CityFilter_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            //DataTable dataTable = Ad.DataSet.Tables["Clients"];
+            //var view = Ad.DataSet.Tables["Clients"].DefaultView;
+            //view.RowFilter = $"City Id = '{CityFilter.SelectedValue}'";
+            //DataList.ItemsSource = (System.Collections.IEnumerable)view.ToTable();
+            //view.RowFilter = string.Empty;
+
+        }
+
+        #endregion
+
 
     }
 }
