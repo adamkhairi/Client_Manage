@@ -8,87 +8,47 @@ namespace Client_Manage
 {
     class AdoNet
     {
-        private SqlConnection connection;
-        private SqlCommand command;
-        private SqlDataReader reader;
-        private SqlDataAdapter adapter;
-        private readonly string connectionString;
 
-        private DataSet dataSet;
-        private DataTable citiesDataTable;
-        private DataTable clientsDataTable;
-
-        private SqlCommandBuilder builder;
+        // Declaration des objets sql
+        private SqlConnection cnx = new SqlConnection();
+        private SqlCommand cmd = new SqlCommand();
+        private SqlDataReader dataReader;
+        private DataTable datatable = new DataTable();
+        private SqlDataAdapter adapter = new SqlDataAdapter();
+        private DataSet dataSet = new DataSet();
+        private DataRow row;
         private bool ifUpdate = false;
+        private SqlCommandBuilder builder;
 
-        public SqlCommandBuilder Builder
+        public bool IfUpdate { get => IfUpdate1; set => IfUpdate1 = value; }
+        public SqlCommandBuilder Builder { get => builder; set => builder = value; }
+        public SqlConnection Cnx { get => cnx; set => cnx = value; }
+        public SqlCommand Cmd { get => cmd; set => cmd = value; }
+        public DataRow Row { get => row; set => row = value; }
+        public bool IfUpdate1 { get => ifUpdate; set => ifUpdate = value; }
+        public SqlDataReader DataReader { get => dataReader; set => dataReader = value; }
+        public DataTable Datatable { get => datatable; set => datatable = value; }
+        public SqlDataAdapter Adapter { get => adapter; set => adapter = value; }
+        public DataSet DataSet { get => dataSet; set => dataSet = value; }
+
+        // declaration of connect 
+        public void connect()
         {
-            get => builder;
-            set => builder = value;
+            if (Cnx.State == ConnectionState.Closed || Cnx.State == ConnectionState.Broken)
+            {
+                Cnx.ConnectionString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=clientDb;Integrated Security=True";
+                Cnx.Open();
+            }
         }
 
-
-        public bool IfUpdate
+        // declaration de la methode deconnecter
+        public void disconnect()
         {
-            get => ifUpdate;
-            set => ifUpdate = value;
-        }
-
-        public SqlConnection Connection
-        {
-            get => connection;
-            set => connection = value;
-        }
-
-        public SqlCommand Command
-        {
-            get => command;
-            set => command = value;
-        }
-
-        public SqlDataReader Reader
-        {
-            get => reader;
-            set => reader = value;
-        }
-
-        public SqlDataAdapter Adapter
-        {
-            get => adapter;
-            set => adapter = value;
-        }
-
-        public string ConnectionString
-        {
-            get => connectionString;
-        }
-
-        public DataTable CitiesDataTable
-        {
-            get => citiesDataTable;
-            set => citiesDataTable = value;
-        }
-
-        public DataTable ClientsDataTable
-        {
-            get => clientsDataTable;
-            set => clientsDataTable = value;
-        }
-
-        public DataSet DataSet
-        {
-            get => dataSet;
-            set => dataSet = value;
-        }
-
-        public AdoNet()
-        {
-            connectionString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=Client;Integrated Security=True";
-            connection = new SqlConnection(connectionString);
-            command = new SqlCommand();
-            adapter = new SqlDataAdapter();
-            dataSet = new DataSet();
-
+            if (Cnx.State == ConnectionState.Open)
+            {
+                Cnx.Close();
+            }
         }
     }
+
 }

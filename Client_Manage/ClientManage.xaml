@@ -60,7 +60,7 @@
                             <TextBox Name="FName" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
                             <TextBox Name="LName" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
                             <TextBox Name="Address" Width="220" Margin="2" Padding="3" HorizontalAlignment="Center"/>
-                            <ComboBox Name="City" Width="220" Margin="2" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SelectedIndex="0">
+                            <ComboBox Name="City" Width="220" Margin="2" HorizontalContentAlignment="Center" HorizontalAlignment="Center" SelectedIndex="-1">
                             </ComboBox>
                         </StackPanel>
                         <!--///////-->
@@ -70,11 +70,11 @@
                     <!--Buttons Control-->
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0 10">
                         <StackPanel Orientation="Horizontal">
-                            <Button Name="btnUpdate" Width="100" Content="Update" Margin="5 5 15 5" Click="btnUpdate_Click"/>
-                            <Button Name="btnDelete" Width="100" Content="Delete" Margin="15 5 5 5"/>
+                            <Button Name="btnUpdate" Width="100" Content="Update" Margin="5 5 15 5" Click="btnUpdate_Click" />
+                            <Button Name="btnDelete" Width="100" Content="Delete" Margin="15 5 5 5" Click="btnDelete_Click"/>
                         </StackPanel>
-                        <Button Name="btnAdd" Content="Add"  Margin=" 5" Click="btnAdd_Click"/>
-                        <Button Name="btnSave" Content="Save" Width="80" Margin=" 5" Click="btnSave_Click"/>
+                        <Button Name="btnAdd" Content="Add"  Margin=" 5" Click="btnAdd_Click" />
+                        <Button Name="btnSave" Content="Save" Width="80" Margin=" 5" Click="btnSave_Click" />
 
                     </StackPanel>
                     <!--///////-->
@@ -84,11 +84,11 @@
                 <!--/////////-->
 
                 <!--DataGrid-->
-                <StackPanel Grid.Column="1" Background="WhiteSmoke" Margin="2">
+                <StackPanel Grid.Column="1" Background="Orange" Margin="2">
                     <!--Filter ComboBox-->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
                         <Label Content="Filter :" />
-                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0" SelectionChanged="CityFilter_OnSelectionChanged">
+                        <ComboBox Name="CityFilter" Width="200" SelectedIndex="0">
                             <ComboBoxItem IsEnabled="False" Content="All"></ComboBoxItem>
                         </ComboBox>
                     </StackPanel>
@@ -96,7 +96,7 @@
 
                     <!--DataGrid / Tables Clients-->
                     <Grid>
-                        <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center" SelectionMode="Single" SelectedItem="">
+                        <DataGrid Name="DataList" Margin="5" HorizontalContentAlignment="Center" SelectionMode="Single" SelectedItem="-1" SelectionChanged="DataList_SelectionChanged">
 
                         </DataGrid>
                     </Grid>

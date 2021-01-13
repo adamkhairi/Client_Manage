@@ -13,127 +13,140 @@ namespace Client_Manage
     /// </summary>
     public partial class MainWindow : MetroWindow
     {
-        //Initialise Variables 
-        private readonly AdoNet adoNet = new AdoNet();
-        //private string connString = "Data Source=DESKTOP-AGEVIQ5;Initial Catalog=ClientManage;Integrated Security=True";
-        //private SqlDataAdapter dataAdapter;
-        //private DataSet dataSet;
-        //private SqlConnection cnx;
-
-
         public MainWindow()
         {
             InitializeComponent();
 
         }
 
-        ///////-->
-        #region sdfsdf
-        private void ClientManage_Load(object sender, EventArgs e)
+        AdoNet Ad = new AdoNet();
+        int SelectedId;
+
+
+        #region App Loading ==>
+
+        private void ClientManage_Load(object sender, RoutedEventArgs e)
         {
-            //Fill DropDowns With City
-            GetStarted();
-            //Get All Client
+            DataList.CanUserAddRows = false;
+            //Get Clients and Cities
+            GetClients();
+            GetCitys();
+
         }
 
         #endregion
 
-        private void GetStarted()
-        {
-            //adoNet = new AdoNet();
 
+        #region Get Clients and fill DataList ==>
+
+        void GetClients()
+        {
             try
             {
-                //SqlCommand => 2 Tables = Clients and Cities
-                const string req = @"Select * From Citys; Select * From Clients;";
+                //Clear if it's already fill
+                if (Ad.DataSet.Tables["Clients"] != null) Ad.DataSet.Tables["Clients"].Clear();
 
-                //Set the Request
-                adoNet.Command.CommandText = req;
+                //Open Conncection to DB
+                Ad.connect();
 
-                //Connection with Db
-                adoNet.Command.Connection = adoNet.Connection;
+                Ad.Adapter = new SqlDataAdapter("Select * From Clients", Ad.Cnx);
 
-                //Send Command and Get Result in Adapter
-                adoNet.Adapter.SelectCommand = adoNet.Command;
-
-                //Fill the DataSet with Result wish in Adapter
-                adoNet.Adapter.Fill(adoNet.DataSet);
-
-                //Separate the 2 Tables 
-                //Cities and Clients from DataSet To DataTable Cities/Clients
-                adoNet.CitiesDataTable = adoNet.DataSet.Tables[0];
-                adoNet.ClientsDataTable = adoNet.DataSet.Tables[1];
-
-                //Set Name to the tow tables
-                adoNet.CitiesDataTable.TableName = "Citys";
-                adoNet.ClientsDataTable.TableName = "Clients";
-
-                //DataColumn[] pk = { adoNet.DataSet.Tables[1].Columns["Client Id"] };
-                //adoNet.DataSet.Tables[1].PrimaryKey = pk;
-
-                //Fill the UI Table (DataGrid) with  Clients DataTable
-                DataList.ItemsSource = adoNet.ClientsDataTable.DefaultView;
-
-                //Fill DropDowns With Cities
-                City.ItemsSource = adoNet.CitiesDataTable.DefaultView;
-
-                //City.DisplayMemberPath = "cityName";
-                City.DisplayMemberPath = adoNet.CitiesDataTable.Columns[1].ColumnName;
-
-                //City.SelectedValuePath = "cityId";
-                City.SelectedValuePath = adoNet.CitiesDataTable.Columns[1].ColumnName;
-
-                //
-                DataList.SelectionChanged += (s, e) =>
-                {
-                    DataRowView row = DataList.SelectedItem as DataRowView;
-
-                    if (row == null) return;
-
-                    adoNet.IfUpdate = true;
-                    //cientId.Text = row.Row[0].ToString().Trim();
-                    FName.Text = row.Row[1].ToString()?.Trim() ?? string.Empty;
-                    LName.Text = row.Row[2].ToString()?.Trim() ?? string.Empty;
-                    Address.Text = row.Row[3].ToString()?.Trim() ?? string.Empty;
-                    City.SelectedValue = row.Row[4].ToString()?.Trim();
-
-                    //Check If any update Done if so turn IfUpdate to false to allow Adding New Client
-                    foreach (UIElement item in Inputs.Children)
-                    {
-                        switch (item)
-                        {
-                            //In Case item is TextBox
-                            case TextBox box:
-                                box.TextChanged += (s, e) =>
-                                {
-                                    adoNet.IfUpdate = false;
-                                };
-                                break;
-
-                            //In Case item is ComboBox
-                            case ComboBox comboBox:
-                                comboBox.SelectionChanged += (s, e) =>
-                                {
-                                    adoNet.IfUpdate = false;
-                                };
-                                break;
-                        }
-                    }
-                };
+                ////Fill the DataSet with Result of the Sql Request wish in Adapter
+                Ad.Adapter.Fill(Ad.DataSet, "Clients");
+                Ad.disconnect();
+                //Copy Clients Table in a DataTable
+                //Ad.Datatable = Ad.DataSet.Tables["Clients"];
+                DataList.ItemsSource = Ad.DataSet.Tables["Clients"].DefaultView;
             }
             catch (Exception e)
             {
-                MessageBox.Show(e.ToString());
+                MessageBox.Show(e + string.Empty);
             }
         }
 
+        #endregion
 
-        private void CityFilter_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+
+        #region Get Cities From Db and add them to ComboBox ==>
+
+        void GetCitys()
         {
-            // Change 
+            try
+            {
+                City.Items.Clear();
+                CityFilter.Items.Clear();
+                Ad.Adapter = new SqlDataAdapter("Select * From Citys", Ad.Cnx);
+
+                ////Fill the DataSet with Result wish in Adapter
+                Ad.Adapter.Fill(Ad.DataSet, "Citys");
+
+                //Fill the UI DropDown with Cities DataTable
+                City.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
+                City.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
+                City.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
+
+                //Fill the UI DropDown with Cities Filtre DataTable
+                CityFilter.ItemsSource = Ad.DataSet.Tables["Citys"].DefaultView;
+                CityFilter.DisplayMemberPath = Ad.DataSet.Tables["Citys"].Columns[1].ColumnName;
+                CityFilter.SelectedValuePath = Ad.DataSet.Tables["Citys"].Columns[0].ColumnName;
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex + string.Empty);
+            }
         }
 
-        ////Top left GitHub ICON Event
+        #endregion
+
+
+        #region On Selection Of DataGrid Rows Changes Do ==>
+
+        private void DataList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DataRowView row = DataList.SelectedItem as DataRowView;
+            if (row == null) return;
+
+            //Turn On Updates
+            Ad.IfUpdate = true;
+
+            //Affect Infos To Inputs
+            SelectedId = int.Parse(row.Row[0].ToString().Trim());
+            FName.Text = row.Row[1].ToString().Trim();
+            LName.Text = row.Row[2].ToString().Trim();
+            Address.Text = row.Row[3].ToString().Trim();
+            City.SelectedValue = row.Row[4].ToString().Trim();
+
+            //Check If any update Done if so turn IfUpdate to false to allow Adding New Client
+            foreach (UIElement item in Inputs.Children)
+            {
+                switch (item)
+                {
+                    //In Case item is TextBox
+                    case TextBox box:
+                        box.TextChanged += (se, ev) =>
+                        {
+                            Ad.IfUpdate = false;
+                        };
+                        break;
+
+                    //In Case item is ComboBox
+                    case ComboBox comboBox:
+                        comboBox.SelectionChanged += (se, ev) =>
+                        {
+                            Ad.IfUpdate = false;
+                        };
+                        break;
+                }
+            }
+        }
+
+        #endregion
+
+
+        #region Top left GitHub ICON Event ==>
+
         private void LaunchGitHubSite(object sender, RoutedEventArgs e)
         {
             const string url = @"https://github.com/adamkhairi/";
@@ -141,70 +154,65 @@ namespace Client_Manage
             {
                 Process.Start(url);
             }
-            catch (Exception other)
+            catch (Exception ex)
             {
-                MessageBox.Show(other.Message);
+                MessageBox.Show(ex + string.Empty);
             }
         }
-        ///////-->
+
+        #endregion
 
 
-        private void btnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-        }
+        #region Button Add Clients Event ==>
 
-        //Add Button
         private void btnAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (adoNet.IfUpdate)
+            if (Ad.IfUpdate)
             {
                 MessageBox.Show("Client Already Exist", "Already exist", MessageBoxButton.OK, MessageBoxImage.Warning);
                 FName.Focus();
             }
             else if (IfEmpty())
             {
-                MessageBox.Show("Please insert Infos !!");
+                MessageBox.Show("Please insert Infos !!", "Empty", MessageBoxButton.OK, MessageBoxImage.Error);
                 FName.Focus();
             }
-            //If IfEmpty = true
             else
             {
                 try
                 {
                     //Create new row with same columns( New Client )
-                    var client = adoNet.ClientsDataTable.NewRow();
+                    Ad.Row = Ad.DataSet.Tables["Clients"].NewRow();
 
                     //Fill Columns of new row with Form Inputs
-                    client[0] = (int.Parse(adoNet.ClientsDataTable.Rows[adoNet.ClientsDataTable.Rows.Count - 1][0]
+                    Ad.Row[0] = (int.Parse(Ad.DataSet.Tables["Clients"].Rows[Ad.DataSet.Tables["Clients"].Rows.Count - 1][0]
                         .ToString() ?? string.Empty) + 1).ToString();
-                    client[1] = FName.Text.Trim();
-                    client[2] = LName.Text.Trim();
-                    client[3] = Address.Text.Trim();
-                    client[4] = City.SelectedValue.ToString()?.Trim();
+                    Ad.Row[1] = FName.Text.Trim();
+                    Ad.Row[2] = LName.Text.Trim();
+                    Ad.Row[3] = Address.Text.Trim();
+                    Ad.Row[4] = City.SelectedValue.ToString()?.Trim();
 
-                    //if (cientId.Text.Trim() != client[0].ToString().Trim())
-                    //{
                     //Add the new Client to the DataTable of Clients
-                    adoNet.ClientsDataTable.Rows.Add(client);
-                    MessageBox.Show("Ok !!");
+                    Ad.DataSet.Tables["Clients"].Rows.Add(Ad.Row);
+                    MessageBox.Show("Added !!");
 
-                    //cientId.Text = int.Parse((cientId.Text )+ 1).ToString();
-                    //Empty all Inputs
+                    //Clear Inputs
                     EmptyInputs();
 
-                    //}
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex);
                     MessageBox.Show(ex + string.Empty);
-                    throw;
+
                 }
             }
         }
-        ///////-->
 
-        /// Check If any Input Empty
+        #endregion
+
+
+        #region Check If any Input Empty ==>
+
         private bool IfEmpty()
         {
             if (FName.Text.Trim().Equals(string.Empty) || LName.Text.Trim().Equals(string.Empty) ||
@@ -213,10 +221,12 @@ namespace Client_Manage
 
             return false;
         }
-        ///////-->
+
+        #endregion 
 
 
-        ///Empty Inputs
+        #region Empty Inputs ==>
+
         private void EmptyInputs()
         {
             foreach (var item in Inputs.Children)
@@ -232,24 +242,112 @@ namespace Client_Manage
                 }
             }
         }
-        ///////-->
 
-        //
+        #endregion
+
+
+        #region Button Delete Client Info Event ==>
+
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                var rows = Ad.DataSet.Tables["Clients"].Rows;
+                bool ifNotDeleted = false;
+
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    if (SelectedId == int.Parse(rows[i][0].ToString()))
+                    {
+                        ifNotDeleted = true;
+                        Ad.DataSet.Tables["Clients"].Rows[i].Delete();
+                        MessageBox.Show("Delete Succ");
+                        DataList.ItemsSource = Ad.DataSet.Tables["Clients"].DefaultView;
+
+                        break;
+                    }
+                }
+                if (ifNotDeleted == false)
+                {
+                    MessageBox.Show("Client Dos not Exist !");
+                }
+                EmptyInputs();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex + string.Empty);
+                throw;
+            }
+
+        }
+
+        #endregion
+
+
+        #region Button Edit Client Info Event ==>
+
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var rows = Ad.DataSet.Tables["Clients"].Rows;
+                bool ifNotEdited = false;
+
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    if (SelectedId == int.Parse(rows[i][0].ToString()))
+                    {
+                        ifNotEdited = true;
+                        Ad.DataSet.Tables["Clients"].Rows[i][1] = FName.Text.ToString().Trim();
+                        Ad.DataSet.Tables["Clients"].Rows[i][2] = LName.Text.ToString().Trim();
+                        Ad.DataSet.Tables["Clients"].Rows[i][3] = Address.Text.ToString().Trim();
+                        Ad.DataSet.Tables["Clients"].Rows[i][4] = City.SelectedValue.ToString().Trim();
+
+                        DataList.ItemsSource = Ad.DataSet.Tables["Clients"].DefaultView;
+
+                        MessageBox.Show("Edit Succ !");
+                        break;
+                    }
+                }
+                if (ifNotEdited == false)
+                {
+                    MessageBox.Show("Client Dos not Exist !");
+                }
+                EmptyInputs();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex + string.Empty);
+                throw;
+            }
+
+        }
+
+        #endregion
+
+
+        #region Button Save Into Database ==>
+
         private void btnSave_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                adoNet.Builder = new SqlCommandBuilder(adoNet.Adapter);
-                adoNet.Adapter.Update(adoNet.DataSet, "Clients");
+                Ad.Builder = new SqlCommandBuilder(Ad.Adapter);
+                MessageBox.Show(Ad.Builder.GetUpdateCommand() + string.Empty);
+                Ad.Adapter.Update(Ad.DataSet, "Clients");
                 MessageBox.Show("Save Done");
             }
             catch (Exception exception)
             {
                 MessageBox.Show(exception + string.Empty);
-                throw;
+
             }
         }
 
-        ///////-->
+        #endregion
+
+
+
     }
 }
